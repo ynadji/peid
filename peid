@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+# 
+# PEiD lookup
+#
+
+import peutils
+from pefile import PE
+
+import sys
+import os
+from optparse import OptionParser
+from glob import glob
+
+def main():
+    """main function for standalone usage"""
+    usage = "usage: %prog [options] BINARIES"
+    parser = OptionParser(usage=usage)
+    parser.add_option("-d", "--database", dest="db", default="userdb.txt",
+            help="Database of signatures to use [default: %default]")
+    parser.add_option("-e", "--ep_only", dest="ep_only", default=True,
+            action="store_false", help="EP Only [default: %default]")
+
+    (options, args) = parser.parse_args()
+
+    if len(args) != 1:
+        parser.print_help()
+        return 2
+
+    def f(path):
+        print "%s: %s" % (path, sigs.match(PE(path), options.ep_only))
+
+    # do stuff
+    try:
+        sigs = peutils.SignatureDatabase(data=options.db)
+    except:
+        sigs = peutils.SignatureDatabase(options.db)
+
+    if os.path.isfile(args[0]):
+        f(args[0])
+    else:
+        map(f, glob(os.path.join(args[0], "*")))
+
+if __name__ == '__main__':
+    sys.exit(main())
