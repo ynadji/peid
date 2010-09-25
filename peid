@@ -4,7 +4,7 @@
 #
 
 import peutils
-from pefile import PE
+import pefile
 
 import sys
 import os
@@ -27,7 +27,10 @@ def main():
         return 2
 
     def f(path):
-        print "%s: %s" % (path, sigs.match(PE(path), options.ep_only))
+        try:
+            print "%s: %s" % (path, sigs.match(pefile.PE(path), options.ep_only))
+        except pefile.PEFormatError as e:
+            print "%s: Error, %s" % (path, str(e))
 
     # do stuff
     try:
