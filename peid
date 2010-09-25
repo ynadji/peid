@@ -22,7 +22,7 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if len(args) != 1:
+    if len(args) < 1:
         parser.print_help()
         return 2
 
@@ -39,7 +39,7 @@ def main():
         sigs = peutils.SignatureDatabase(options.db)
 
     if os.path.isfile(args[0]):
-        f(args[0])
+        map(f, args)
     else:
         map(f, glob(os.path.join(args[0], "*")))
 
